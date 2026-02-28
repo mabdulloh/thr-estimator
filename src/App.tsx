@@ -250,8 +250,10 @@ export default function App() {
                   cursor={{ fill: 'rgba(255,255,255,0.02)' }}
                   contentStyle={{ background: '#1e293b', border: '1px solid var(--border)', borderRadius: '12px' }}
                   formatter={(v: any) => [formatIDR(Number(v)), 'Pajak']}
+                  isAnimationActive={false}
+                  wrapperStyle={{ pointerEvents: 'none' }}
                 />
-                <Bar dataKey="tax" radius={[10, 10, 0, 0]} barSize={60}>
+                <Bar dataKey="tax" radius={[10, 10, 0, 0]} barSize={60} isAnimationActive={false}>
                   {chartData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
                 </Bar>
               </BarChart>
