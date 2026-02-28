@@ -88,7 +88,7 @@ const resources = {
             yearly_breakdown: "Rincian Pajak Bulanan",
             yearly_note: "Perbedaan muncul karena pajak bulanan menggunakan TER (Tarif Efektif Rata-rata) sementara pajak akhir dihitung global menggunakan tarif Pasal 17 (Progressive).",
             hike_warning: "Pajak Anda naik sebesar {{perc}}% bulan ini.",
-            disclaimer: "© 2024 Estimator Pajak THR • Dibuat dengan Metode TER (PMK 168/2023)",
+            disclaimer: "2026 Estimator Pajak THR • Dibuat dengan Metode TER (PMK 168/2023)",
             months: "Bln",
             full_salary: "Full 1x Gaji",
             prorated: "Pro-rata",
