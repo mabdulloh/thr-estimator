@@ -241,17 +241,18 @@ export default function App() {
               <h3 style={{ fontSize: '1.1rem' }}>{t('visual_title')}</h3>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}><Info size={14} /> {t('visual_info')} {currentCategory}</div>
             </div>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} debounce={50}>
+              <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                 <XAxis dataKey="name" stroke="var(--text-dim)" axisLine={false} tickLine={false} />
                 <YAxis stroke="var(--text-dim)" hide />
                 <Tooltip
                   cursor={{ fill: 'rgba(255,255,255,0.02)' }}
-                  contentStyle={{ background: '#1e293b', border: '1px solid var(--border)', borderRadius: '12px' }}
+                  contentStyle={{ background: '#1e293b', border: '1px solid var(--border)', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)' }}
                   formatter={(v: any) => [formatIDR(Number(v)), 'Pajak']}
                   isAnimationActive={false}
-                  wrapperStyle={{ pointerEvents: 'none' }}
+                  useTranslate3d={false}
+                  wrapperStyle={{ pointerEvents: 'none', zIndex: 1000 }}
                 />
                 <Bar dataKey="tax" radius={[10, 10, 0, 0]} barSize={60} isAnimationActive={false}>
                   {chartData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
