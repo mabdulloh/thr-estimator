@@ -39,7 +39,7 @@ const resources = {
             yearly_breakdown: "Monthly Tax Breakdown",
             yearly_note: "The difference occurs because monthly taxes use TER (Daily/Monthly Average Rate) while the final tax is calculated globally using Article 17 (Progressive) rates.",
             hike_warning: "Your tax increased by {{perc}}% this month.",
-            disclaimer: "© 2024 THR Tax Estimator • Built with TER Method (PMK 168/2023)",
+            disclaimer: "2026 THR Tax Estimator • Built with TER Method (PMK 168/2023)",
             months: "Mo",
             full_salary: "Full 1x Salary",
             prorated: "Pro-rated",

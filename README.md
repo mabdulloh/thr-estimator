@@ -87,4 +87,3 @@ src/
 ## ⚖️ Disclaimer
 *This tool provides estimates based on current Indonesian tax regulations (PMK 168/2023 and PPh 21 Article 17). Results may vary depending on specific company policies or individual tax status changes. Always consult with your company's HR/Payroll department for binding figures.*
 
-© 2024 THR Tax Estimator
