@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Wallet, TrendingUp, AlertCircle, CreditCard, Info, Languages, ShieldCheck, Calculator, X, Calendar } from 'lucide-react';
+import { Wallet, TrendingUp, AlertCircle, CreditCard, Info, ShieldCheck, Calculator, X, Calendar, Sun, Moon } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { calculateTaxResult, calculateYearlyEstimate } from './lib/taxEngine';
 import type { Category } from './lib/taxEngine';
@@ -25,10 +25,21 @@ export default function App() {
   const [tenure, setTenure] = useState(12);
   const [ptkpId, setPtkpId] = useState('TK/0');
   const [showYearly, setShowYearly] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
 
   const toggleLang = () => {
     i18n.changeLanguage(i18n.language === 'id' ? 'en' : 'id');
   };
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   const currentCategory = useMemo(() => {
     return (PTKP_OPTIONS.find(o => o.id === ptkpId)?.cat || 'A') as Category;
@@ -56,9 +67,24 @@ export default function App() {
   return (
     <div className="app-container">
       <div className="header">
-        <button className="lang-toggle" onClick={toggleLang}>
-          <Languages size={16} /> {t('lang_switch')}
-        </button>
+        <div className="controls-group">
+          {/* Theme Toggle */}
+          <div className="toggle-switch" onClick={toggleTheme}>
+            <div className={`toggle-option ${theme === 'light' ? 'active' : ''}`}>
+              <Sun size={14} />
+            </div>
+            <div className={`toggle-option ${theme === 'dark' ? 'active' : ''}`}>
+              <Moon size={14} />
+            </div>
+          </div>
+
+          {/* Language Toggle */}
+          <div className="toggle-switch" onClick={toggleLang}>
+            <div className={`toggle-option ${i18n.language.startsWith('en') ? 'active' : ''}`}>EN</div>
+            <div className={`toggle-option ${i18n.language.startsWith('id') ? 'active' : ''}`}>ID</div>
+          </div>
+        </div>
+
         <h1>{t('title')}</h1>
         <p style={{ color: 'var(--text-dim)' }}>{t('subtitle')}</p>
       </div>

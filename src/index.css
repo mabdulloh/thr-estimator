@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --bg: #0f172a;
+  --bg: #1e293b;
+  --bg-dark: #0f172a;
   --bg-card: rgba(30, 41, 59, 0.7);
   --accent: #3b82f6;
   --accent-red: #ef4444;
@@ -9,6 +10,21 @@
   --text: #f8fafc;
   --text-dim: #94a3b8;
   --border: rgba(255, 255, 255, 0.1);
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --input-bg: rgba(15, 23, 42, 0.8);
+  --surface-lighter: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='light'] {
+  --bg: #f8fafc;
+  --bg-dark: #f1f5f9;
+  --bg-card: rgba(255, 255, 255, 0.7);
+  --text: #0f172a;
+  --text-dim: #64748b;
+  --border: rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --input-bg: #fff;
+  --surface-lighter: rgba(0, 0, 0, 0.03);
 }
 
 * {
@@ -19,10 +35,11 @@
 
 body {
   font-family: 'Outfit', sans-serif;
-  background: radial-gradient(circle at top left, #1e293b, #0f172a);
+  background: radial-gradient(circle at top left, var(--bg), var(--bg-dark));
   color: var(--text);
   min-height: 100vh;
   padding: 2rem 1rem;
+  transition: background 0.3s, color 0.3s;
   display: flex;
   justify-content: center;
 }
@@ -38,26 +55,52 @@ body {
   position: relative;
 }
 
-.lang-toggle {
+.controls-group {
   position: absolute;
   top: 0;
   right: 0;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  padding: 0.5rem 1rem;
-  border-radius: 2rem;
-  cursor: pointer;
   display: flex;
+  gap: 0.75rem;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8rem;
-  transition: all 0.2s;
 }
 
-.lang-toggle:hover {
-  background: rgba(255, 255, 255, 0.1);
+.toggle-switch {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 0.25rem;
+  border-radius: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.toggle-option {
+  padding: 0.35rem 0.8rem;
+  border-radius: 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.toggle-option.active {
+  background: var(--accent);
   color: #fff;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.toggle-switch:hover {
+  border-color: var(--accent);
+}
+
+[data-theme='light'] .toggle-option.active {
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
 }
 
 .header h1 {
@@ -99,11 +142,11 @@ body {
 
 .input-box input,
 .input-box select {
-  background: rgba(15, 23, 42, 0.8);
+  background: var(--input-bg);
   border: 1px solid var(--border);
   border-radius: 0.75rem;
   padding: 0.8rem 1rem;
-  color: #fff;
+  color: var(--text);
   font-size: 1rem;
   transition: all 0.2s;
 }

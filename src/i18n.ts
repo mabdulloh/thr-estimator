@@ -39,6 +39,8 @@ const resources = {
             yearly_breakdown: "Monthly Tax Breakdown",
             yearly_note: "The difference occurs because monthly taxes use TER (Daily/Monthly Average Rate) while the final tax is calculated globally using Article 17 (Progressive) rates.",
             hike_warning: "Your tax increased by {{perc}}% this month.",
+            theme_light: "Light",
+            theme_dark: "Dark",
             disclaimer: "2026 THR Tax Estimator • Built with TER Method (PMK 168/2023)",
             months: "Mo",
             full_salary: "Full 1x Salary",
@@ -88,6 +90,8 @@ const resources = {
             yearly_breakdown: "Rincian Pajak Bulanan",
             yearly_note: "Perbedaan muncul karena pajak bulanan menggunakan TER (Tarif Efektif Rata-rata) sementara pajak akhir dihitung global menggunakan tarif Pasal 17 (Progressive).",
             hike_warning: "Pajak Anda naik sebesar {{perc}}% bulan ini.",
+            theme_light: "Terang",
+            theme_dark: "Gelap",
             disclaimer: "2026 Estimator Pajak THR • Dibuat dengan Metode TER (PMK 168/2023)",
             months: "Bln",
             full_salary: "Full 1x Gaji",
@@ -108,7 +112,7 @@ i18n
     .use(initReactI18next)
     .init({
         resources,
-        fallbackLng: 'id',
+        fallbackLng: 'en',
         interpolation: {
             escapeValue: false
         }
