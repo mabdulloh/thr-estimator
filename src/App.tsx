@@ -160,7 +160,7 @@ export default function App() {
 
           <div className="input-box">
             <label>{t('label_tenure')}</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div className="slider-box">
               <input
                 type="range" min="1" max="12" value={tenure}
                 onChange={(e) => setTenure(Number(e.target.value))}
@@ -194,7 +194,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="card" style={{ gridColumn: 'span 2' }}>
+          <div className="card full-span">
             <h3 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <ShieldCheck size={20} style={{ color: '#10b981' }} /> {t('label_deductions')}
             </h3>
@@ -230,7 +230,7 @@ export default function App() {
             <p style={{ fontSize: '0.75rem', opacity: 0.7 }}>{t('desc_payday_receipt')}</p>
           </div>
 
-          <div style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '1rem', minHeight: 'fit-content' }}>
+          <div className="full-span" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '1rem', minHeight: 'fit-content' }}>
             <button className="btn-primary" onClick={() => setShowYearly(true)}>
               <Calculator size={18} /> {t('btn_yearly_est')}
             </button>
