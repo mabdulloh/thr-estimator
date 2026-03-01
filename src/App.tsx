@@ -1,9 +1,12 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Wallet, TrendingUp, AlertCircle, CreditCard, Info, ShieldCheck, Calculator, X, Calendar, Sun, Moon } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { Wallet, TrendingUp, AlertCircle, CreditCard, ShieldCheck, Calculator, X, Calendar, Sun, Moon, Activity } from 'lucide-react';
 import { calculateTaxResult, calculateYearlyEstimate } from './lib/taxEngine';
 import type { Category } from './lib/taxEngine';
+import { useAnimatedNumber } from './lib/useAnimatedNumber';
+import CustomBarChart from './components/CustomBarChart';
+import InfoTooltip from './components/InfoTooltip';
+import RateBar from './components/RateBar';
 
 const PTKP_OPTIONS = [
   { id: 'TK/0', label: 'ptkp_tk0', cat: 'A' },
@@ -16,8 +19,14 @@ const PTKP_OPTIONS = [
   { id: 'K/3', label: 'ptkp_k3', cat: 'C' },
 ];
 
-const formatIDR = (n: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
+const formatIDR = (n: number) =>
+  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
 const formatPerc = (n: number) => (n * 100).toFixed(2) + '%';
+
+function AnimatedIDR({ value }: { value: number }) {
+  const animated = useAnimatedNumber(value);
+  return <>{formatIDR(animated)}</>;
+}
 
 export default function App() {
   const { t, i18n } = useTranslation();
@@ -32,9 +41,19 @@ export default function App() {
   };
 
   const toggleTheme = () => {
+    document.body.classList.add('theme-transitioning');
+
     const newTheme = theme === 'dark' ? 'light' : 'dark';
+
+    // Force reflow so the transition: none takes effect
+    void document.body.offsetHeight;
+
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
+
+    setTimeout(() => {
+      document.body.classList.remove('theme-transitioning');
+    }, 150);
   };
 
   useEffect(() => {
@@ -56,12 +75,11 @@ export default function App() {
   }, [salary, tenure]);
 
   const result = useMemo(() => calculateTaxResult(currentCategory, salary, calculatedTHR), [currentCategory, salary, calculatedTHR]);
-
   const yearly = useMemo(() => calculateYearlyEstimate(ptkpId, currentCategory, salary, calculatedTHR), [ptkpId, currentCategory, salary, calculatedTHR]);
 
   const chartData = [
-    { name: t('chart_normal'), tax: result.normal.tax, fill: '#3b82f6' },
-    { name: t('chart_thr'), tax: result.march.tax, fill: '#ef4444' },
+    { name: t('chart_normal'), value: result.normal.tax, color: 'var(--accent)' },
+    { name: t('chart_thr'), value: result.march.tax, color: 'var(--accent-red)' },
   ];
 
   return (
@@ -70,14 +88,9 @@ export default function App() {
         <div className="controls-group">
           {/* Theme Toggle */}
           <div className="toggle-switch" onClick={toggleTheme}>
-            <div className={`toggle-option ${theme === 'light' ? 'active' : ''}`}>
-              <Sun size={14} />
-            </div>
-            <div className={`toggle-option ${theme === 'dark' ? 'active' : ''}`}>
-              <Moon size={14} />
-            </div>
+            <div className={`toggle-option ${theme === 'light' ? 'active' : ''}`}><Sun size={14} /></div>
+            <div className={`toggle-option ${theme === 'dark' ? 'active' : ''}`}><Moon size={14} /></div>
           </div>
-
           {/* Language Toggle */}
           <div className="toggle-switch" onClick={toggleLang}>
             <div className={`toggle-option ${i18n.language.startsWith('en') ? 'active' : ''}`}>EN</div>
@@ -95,6 +108,7 @@ export default function App() {
             <button className="close-btn" onClick={() => setShowYearly(false)}><X size={20} /></button>
             <h2 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <Calendar size={24} color="var(--accent)" /> {t('yearly_modal_title')}
+              <InfoTooltip text={t('info_art17')} placement="bottom" />
             </h2>
 
             <div className="grid-inputs" style={{ marginBottom: '2rem' }}>
@@ -126,15 +140,15 @@ export default function App() {
               </tbody>
             </table>
 
-            <div className="card stat-card highlight" style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.2)', marginBottom: '1.5rem' }}>
+            <div className="card stat-card highlight" style={{ background: 'var(--accent-amber-bg)', border: '1px solid var(--accent-amber-border)', marginBottom: '1.5rem' }}>
               <div className="label" style={{ color: 'var(--accent-amber)' }}><AlertCircle size={18} /> {t('yearly_dec_adj')}</div>
               <div className="val" style={{ color: 'var(--accent-amber)', fontSize: '1.8rem' }}>{yearly.decAdjustment > 0 ? '+' : ''}{formatIDR(yearly.decAdjustment)}</div>
               <p style={{ fontSize: '0.75rem', opacity: 0.8, marginTop: '0.5rem' }}>{t('yearly_note')}</p>
             </div>
 
-            <div className="card stat-card highlight" style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-              <div className="label" style={{ color: '#10b981' }}><Wallet size={18} /> {t('yearly_dec_net')}</div>
-              <div className="val" style={{ color: '#10b981' }}>{formatIDR(yearly.decNet)}</div>
+            <div className="card stat-card highlight" style={{ background: 'var(--accent-green-bg)', border: '1px solid var(--accent-green-border)' }}>
+              <div className="label" style={{ color: 'var(--accent-green)' }}><Wallet size={18} /> {t('yearly_dec_net')}</div>
+              <div className="val" style={{ color: 'var(--accent-green)' }}>{formatIDR(yearly.decNet)}</div>
             </div>
           </div>
         </div>
@@ -152,7 +166,10 @@ export default function App() {
           </div>
 
           <div className="input-box">
-            <label>{t('label_ptkp')}</label>
+            <label style={{ display: 'flex', alignItems: 'center' }}>
+              {t('label_ptkp')}
+              <InfoTooltip text={t('info_ptkp')} />
+            </label>
             <select value={ptkpId} onChange={(e) => setPtkpId(e.target.value)}>
               {PTKP_OPTIONS.map(o => <option key={o.id} value={o.id}>{t(o.label)}</option>)}
             </select>
@@ -174,91 +191,88 @@ export default function App() {
         <div className="dashboard">
           <div className="card stat-card">
             <div className="label"><Wallet size={18} /> {t('stat_normal')}</div>
-            <div className="val">{formatIDR(result.normal.tax)}</div>
-            <div className="badge" style={{ background: 'rgba(59,130,246,0.1)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.2)' }}>
+            <div className="val"><AnimatedIDR value={result.normal.tax} /></div>
+            <div className="badge" style={{ background: 'var(--accent-blue-bg)', color: 'var(--accent-blue-text)', borderColor: 'var(--accent-blue-border)' }}>
               {formatPerc(result.normal.rate)}
             </div>
           </div>
 
           <div className="card stat-card tax">
             <div className="label"><CreditCard size={18} /> {t('stat_thr_month')}</div>
-            <div className="val">{formatIDR(result.march.tax)}</div>
+            <div className="val"><AnimatedIDR value={result.march.tax} /></div>
             <div className="badge">{formatPerc(result.march.rate)}</div>
           </div>
 
           <div className="card stat-card hike">
             <div className="label"><TrendingUp size={18} /> {t('stat_hike')}</div>
-            <div className="val">+{formatIDR(result.hike.absolute)}</div>
+            <div className="val">+<AnimatedIDR value={result.hike.absolute} /></div>
             <div className="badge" style={{ marginTop: '0.5rem', fontSize: '0.75rem' }}>
-              {t('hike_warning', { perc: result.hike.percIncrease.toFixed(0) })}
+              {result.hike.isFromZero
+                ? t('hike_from_zero', { perc: (result.march.rate * 100).toFixed(2) })
+                : t('hike_warning', { perc: result.hike.percIncrease.toFixed(0) })}
+            </div>
+          </div>
+
+          {/* Tax Rate Progress Bars */}
+          <div className="card stat-card full-span">
+            <div className="label" style={{ marginBottom: '1rem' }}>
+              <Activity size={18} /> {t('visual_info')} <span style={{ fontWeight: 700, color: 'var(--accent)' }}>{currentCategory}</span>
+              <InfoTooltip text={t('info_ter')} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <RateBar rate={result.normal.rate} label={t('stat_normal_rate')} />
+              <RateBar rate={result.march.rate} label={t('stat_thr_rate')} />
             </div>
           </div>
 
           <div className="card full-span">
             <h3 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <ShieldCheck size={20} style={{ color: '#10b981' }} /> {t('label_deductions')}
+              <ShieldCheck size={20} style={{ color: 'var(--accent-green)' }} /> {t('label_deductions')}
             </h3>
             <div className="deductions-list">
               <div className="deduction-item">
-                <span>{t('deduction_jht')}</span>
-                <span>-{formatIDR(result.details.jht)}</span>
+                <span style={{ display: 'flex', alignItems: 'center' }}>{t('deduction_jht')} <InfoTooltip text={t('info_jht')} /></span>
+                <span>-<AnimatedIDR value={result.details.jht} /></span>
               </div>
               <div className="deduction-item">
-                <span>{t('deduction_bpjs')}</span>
-                <span>-{formatIDR(result.details.bpjs)}</span>
+                <span style={{ display: 'flex', alignItems: 'center' }}>{t('deduction_bpjs')} <InfoTooltip text={t('info_bpjs')} /></span>
+                <span>-<AnimatedIDR value={result.details.bpjs} /></span>
               </div>
               <div className="deduction-item">
-                <span>{t('deduction_jp')}</span>
-                <span>-{formatIDR(result.details.jp)}</span>
+                <span style={{ display: 'flex', alignItems: 'center' }}>{t('deduction_jp')} <InfoTooltip text={t('info_jp')} /></span>
+                <span>-<AnimatedIDR value={result.details.jp} /></span>
               </div>
               <div className="deduction-item total">
                 <span>{t('total_deductions')}</span>
-                <span>-{formatIDR(result.normal.deductions)}</span>
+                <span>-<AnimatedIDR value={result.normal.deductions} /></span>
               </div>
             </div>
           </div>
 
-          <div className="card stat-card highlight" style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
-            <div className="label" style={{ color: '#60a5fa' }}><CreditCard size={18} /> {t('stat_thr_receipt')}</div>
-            <div className="val" style={{ color: '#60a5fa' }}>{formatIDR(result.payouts.thr)}</div>
+          <div className="card stat-card highlight" style={{ background: 'var(--accent-blue-bg)', border: '1px solid var(--accent-blue-border)' }}>
+            <div className="label" style={{ color: 'var(--accent-blue-text)' }}><CreditCard size={18} /> {t('stat_thr_receipt')}</div>
+            <div className="val" style={{ color: 'var(--accent-blue-text)' }}><AnimatedIDR value={result.payouts.thr} /></div>
             <p style={{ fontSize: '0.75rem', opacity: 0.7 }}>{t('desc_thr_receipt')}</p>
           </div>
 
-          <div className="card stat-card highlight" style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-            <div className="label" style={{ color: '#10b981' }}><Wallet size={18} /> {t('stat_payday_receipt')}</div>
-            <div className="val" style={{ color: '#10b981' }}>{formatIDR(result.payouts.payday)}</div>
+          <div className="card stat-card highlight" style={{ background: 'var(--accent-green-bg)', border: '1px solid var(--accent-green-border)' }}>
+            <div className="label" style={{ color: 'var(--accent-green)' }}><Wallet size={18} /> {t('stat_payday_receipt')}</div>
+            <div className="val" style={{ color: 'var(--accent-green)' }}><AnimatedIDR value={result.payouts.payday} /></div>
             <p style={{ fontSize: '0.75rem', opacity: 0.7 }}>{t('desc_payday_receipt')}</p>
           </div>
 
-          <div className="full-span" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '1rem', minHeight: 'fit-content' }}>
+          <div className="full-span" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '1rem' }}>
             <button className="btn-primary" onClick={() => setShowYearly(true)}>
               <Calculator size={18} /> {t('btn_yearly_est')}
             </button>
           </div>
 
+          {/* Custom SVG Bar Chart — replaces Recharts */}
           <div className="card chart-section">
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
               <h3 style={{ fontSize: '1.1rem' }}>{t('visual_title')}</h3>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}><Info size={14} /> {t('visual_info')} {currentCategory}</div>
             </div>
-            <ResponsiveContainer width="100%" height="100%" minWidth={0} debounce={50}>
-              <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                <XAxis dataKey="name" stroke="var(--text-dim)" axisLine={false} tickLine={false} />
-                <YAxis stroke="var(--text-dim)" hide />
-                <Tooltip
-                  cursor={{ fill: 'rgba(255,255,255,0.02)' }}
-                  contentStyle={{ background: '#1e293b', border: '1px solid var(--border)', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)' }}
-                  formatter={(v: any) => [formatIDR(Number(v)), 'Pajak']}
-                  isAnimationActive={false}
-                  useTranslate3d={false}
-                  wrapperStyle={{ pointerEvents: 'none', zIndex: 1000 }}
-                />
-                <Bar dataKey="tax" radius={[10, 10, 0, 0]} barSize={60} isAnimationActive={false}>
-                  {chartData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <CustomBarChart data={chartData} formatValue={formatIDR} height={260} />
           </div>
         </div>
       </div>

@@ -129,7 +129,8 @@ export const calculateTaxResult = (category: Category, salary: number, thr: numb
         },
         hike: {
             absolute: marchTax - normalTax,
-            percIncrease: normalTax > 0 ? ((marchTax - normalTax) / normalTax) * 100 : 0,
+            percIncrease: normalTax > 0 ? ((marchTax - normalTax) / normalTax) * 100 : marchRate * 100,
+            isFromZero: normalTax === 0 && marchTax > 0,
             thrDeduction: thr > 0 ? ((marchTax - normalTax) / thr) * 100 : 0
         }
     };
